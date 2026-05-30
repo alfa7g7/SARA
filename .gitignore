@@ -12,33 +12,48 @@ SARA/
 *.pem
 *.key
 
-# Bases de Datos y Vectores
-data/01_raw_icesi/
-data/02_raw_secop/
-data/03_structured/
-data/04_vector_db/
-data/05_propuestas/
+# Bases de Datos Temporales y Pesadas
 data/*.sqlite3
 data/*-wal
 data/*-shm
 data/*.db
 chroma_db/
 
-# Excepciones de Datos (Lo que SÍ debe subirse)
-!**/.gitkeep
-!data/04_outputs/
+# ==========================================
+# GOBIERNO DE DATOS: Cascarones de Directorios
+# Ignoramos todo el contenido, excepto el archivo .gitkeep
+# ==========================================
+data/01_raw_icesi/*
+!data/01_raw_icesi/.gitkeep
 
-# Logs 
+data/02_raw_secop/*
+!data/02_raw_secop/.gitkeep
+
+data/03_structured/*
+!data/03_structured/.gitkeep
+
+data/04_vector_db/*
+!data/04_vector_db/.gitkeep
+
+data/05_propuestas/*
+!data/05_propuestas/.gitkeep
+
+data/04_outputs/*
+!data/04_outputs/.gitkeep
+
+# ==========================================
+# CONFIDENCIALIDAD ESTRICTA (Propiedad Intelectual)
+# ==========================================
+data/04_outputs/golden_truth.json
+data/04_outputs/comparativo_resultados.csv
+
+# Logs e IDEs
 logs/
 *.log
 nohup.out
-
-# IDEs
 .idea/
 .vscode/
 *.swp
 
-# Archivos de la Conversación IA (No subir)
+# Archivos de la Conversación IA
 HISTORIAL_CHAT_AI.txt
-SARA/
-data/
