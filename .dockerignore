@@ -1,0 +1,23 @@
+# Python y entornos
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+SARA/
+
+# Datos pesados, Vectores y Logs (Mapeados por volumen)
+data/
+logs/
+*.sqlite3
+*.db
+chroma_db/
+
+# Historial local
+HISTORIAL_CHAT_AI.txt
+
+# Repositorio y CI
+.git/
+.github/
+.gitignore

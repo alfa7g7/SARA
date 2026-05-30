@@ -1,0 +1,104 @@
+version: '3.8'
+
+# Declaración de la red interna privada para asegurar comunicación local entre contenedores
+networks:
+  sara_net:
+    driver: bridge
+
+services:
+  # ---------------------------------------------------------
+  # 1. BACKEND (FastAPI API REST)
+  # ---------------------------------------------------------
+  sara_api:
+    build: .
+    image: sara_core_image:latest
+    container_name: sara_api
+    restart: always
+    ports:
+      - "8000:8000"
+    command: ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    volumes:
+      - ./data:/app/data
+      - ./src:/app/src
+    env_file:
+      - .env
+    environment:
+      - TZ=America/Bogota
+      # Sobreescritura para asegurar conexión local interna
+      - OLLAMA_HOST=http://sara_ollama:11434
+    networks:
+      - sara_net
+    depends_on:
+      - sara_ollama
+
+  # ---------------------------------------------------------
+  # 2. FRONTEND (Streamlit Dashboard UI)
+  # ---------------------------------------------------------
+  sara_frontend:
+    image: sara_core_image:latest
+    container_name: sara_frontend
+    restart: always
+    ports:
+      - "8501:8501"
+    command: ["streamlit", "run", "src/frontend/app.py", "--server.address", "0.0.0.0", "--server.port", "8501"]
+    volumes:
+      - ./data:/app/data
+      - ./src:/app/src
+    env_file:
+      - .env
+    environment:
+      - TZ=America/Bogota
+      # Sobreescritura para apuntar a la API interna dentro de la misma red
+      - API_URL=http://sara_api:8000
+    networks:
+      - sara_net
+    depends_on:
+      - sara_api
+
+  # ---------------------------------------------------------
+  # 3. WORKER (Orquestador Pipeline Diario SARA)
+  # ---------------------------------------------------------
+  sara_worker:
+    image: sara_core_image:latest
+    container_name: sara_worker
+    restart: always
+    command: ["python", "scripts/worker_loop.py"]
+    volumes:
+      - ./data:/app/data
+      - ./src:/app/src
+      - ./scripts:/app/scripts
+      - ./run_pipeline.py:/app/run_pipeline.py
+    env_file:
+      - .env
+    environment:
+      - TZ=America/Bogota
+      - OLLAMA_HOST=http://sara_ollama:11434
+      # Ejecución cada 24 horas (86400 segundos)
+      - WORKER_INTERVAL_SECONDS=86400
+    networks:
+      - sara_net
+    depends_on:
+      - sara_ollama
+
+  # ---------------------------------------------------------
+  # 4. MOTOR COGNITIVO (Llama 3 Local via Ollama)
+  # ---------------------------------------------------------
+  sara_ollama:
+    image: ollama/ollama:latest
+    container_name: sara_ollama
+    restart: always
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_models:/root/.ollama
+    networks:
+      - sara_net
+    # Inyección de GPU NVIDIA (Sintaxis Legacy para servidores antiguos)
+    # Requiere NVIDIA Container Toolkit instalado en el host bare-metal
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+
+# Volúmenes administrados
+volumes:
+  ollama_models:

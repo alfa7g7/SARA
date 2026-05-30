@@ -1,0 +1,5 @@
+Inventory of /home/analitica/SARA/data/01_raw_icesi
+PDFs: 1626
+Word Docs (docx): 2141
+Word Docs (doc): 0
+Total files: 3798

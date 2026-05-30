@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+SARA/
+
+# Entornos y Secretos
+.env
+*.pem
+*.key
+
+# Bases de Datos y Vectores
+data/01_raw_icesi/
+data/02_raw_secop/
+data/03_structured/
+data/04_vector_db/
+data/05_propuestas/
+data/*.sqlite3
+data/*-wal
+data/*-shm
+data/*.db
+chroma_db/
+
+# Excepciones de Datos (Lo que SÍ debe subirse)
+!**/.gitkeep
+!data/04_outputs/
+
+# Logs 
+logs/
+*.log
+nohup.out
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+
+# Archivos de la Conversación IA (No subir)
+HISTORIAL_CHAT_AI.txt
+SARA/
+data/
