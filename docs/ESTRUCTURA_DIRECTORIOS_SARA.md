@@ -11,10 +11,13 @@ La raíz se mantiene minimalista. Funciona estrictamente como la capa de configu
 *   `run_pipeline.py`: **Worker Principal.** Es el orquestador maestro (CLI) que se ejecuta en el día a día. Encapsula las llamadas a SODA API, invoca a Llama 3 para la inferencia RAG y activa los envíos por correo.
 *   `run_evaluation.py`: **Módulo de Benchmarking.** Orquestador que itera sobre un conjunto de datos controlado (*Golden Truth*) para calcular las métricas estadísticas del sistema (Accuracy, Precision, Recall).
 *   `.env`: Archivo de secretos que contiene las credenciales de correo y variables de entorno del sistema (OLLAMA_HOST, API_URL).
-*   `.gitignore`: Listado de exclusiones de Git para asegurar privacidad de datos y mantener el repositorio limpio.
-*   `Dockerfile` y `docker-compose.yml`: Archivos de configuración de infraestructura (Fase 3) para contenerizar el backend, frontend y bases de datos.
+*   `.gitignore` y `.dockerignore`: Archivos de exclusión estricta para garantizar la limpieza del repositorio y de las imágenes Docker (excluyen bases de datos y entornos).
+*   `Dockerfile` y `docker-compose.yml`: Archivos de Infraestructura como Código (IaC). Definen la topología de 4 microservicios (API, Frontend, Worker, Ollama) con soporte para GPU Passthrough.
 *   `README.md`: Documento de presentación principal para desarrolladores y jurados.
 *   `requirements.txt`: Inventario exacto de dependencias y librerías de Python.
+
+## 🤖 `.github/` (Integración Continua)
+*   `workflows/ci.yml`: Pipeline de GitHub Actions que valida la compilación de la imagen Docker (`sara_core_image`) en cada push para garantizar que el código no rompa el despliegue.
 
 ---
 
@@ -74,6 +77,7 @@ Aislada de Git. Contiene los rastreos de depuración (salida estándar redirigid
 
 Archivos `.py` independientes que **se ejecutan por consola** (`python scripts/...`) para operaciones de mantenimiento y contingencia. Tienen inyectada lógica de `sys.path` para encontrar la carpeta `src/`.
 
+*   `worker_loop.py`: **[NUEVO] Orquestador Autónomo**. Contenedor Worker dedicado que despierta cada 24 horas, ejecuta el `run_pipeline.py`, maneja excepciones de red y vuelve a dormir, garantizando que el sistema jamás se apague en producción.
 *   `massive_ingestion.py`: Script pesado que barre `data/01_raw_icesi/`, procesa los documentos y reconstruye `ChromaDB` desde cero.
 *   `force_evaluation.py`: Herramienta de inyección manual. Obliga a SARA a evaluar los contratos pendientes del *Golden Truth* sin afectar el historial normal diario.
 

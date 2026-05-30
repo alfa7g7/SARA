@@ -1,6 +1,6 @@
 # 🖥️ Diagrama de Arquitectura de Software SARA
 
-Este es el diagrama estructural de los componentes de software, este diagrama muestra cómo se conectan las tecnologías a nivel de infraestructura.
+Este es el diagrama estructural de los componentes de software de SARA. Muestra cómo se conectan las tecnologías a nivel de infraestructura, las cuales están desplegadas como **microservicios independientes usando Docker Compose**.
 
 ---
 
