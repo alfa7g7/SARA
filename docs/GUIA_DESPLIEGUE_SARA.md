@@ -75,7 +75,7 @@ Abre tu navegador local en:
 En esta modalidad, **NO** dependes de configurar entornos virtuales de Python (`source bin/activate`), ni de lanzar procesos manuales con `nohup`. La arquitectura consta de **4 microservicios** (API, Frontend, Worker Autónomo y Ollama nativo).
 
 ### Requisitos Previos para Producción
-1. **NVIDIA Container Toolkit:** Crítico. Debe estar instalado en el servidor anfitrión (bare-metal) para que el contenedor de Ollama pueda reclamar la GPU RTX.
+1. **NVIDIA Container Toolkit:** Crítico y obligatorio. Debe estar instalado en el sistema operativo del servidor anfitrión (bare-metal) para que el demonio de Docker reconozca el `runtime: nvidia`. Sin este paquete, la ejecución fallará inmediatamente y el contenedor de Ollama no podrá reclamar la GPU RTX.
 
 ### Ventajas del despliegue con Docker
 1. **Un solo comando:** Levanta toda la infraestructura simultáneamente.
@@ -98,7 +98,15 @@ docker-compose logs -f
 
 Para apagar todo el ecosistema de tajo (equivalente a los 3 comandos `pkill` nativos):
 ```bash
-docker-compose down
+docker compose down
+```
+
+### Paso Post-Despliegue: Inyección del Cerebro (Modelo LLM)
+Al desplegar la arquitectura, el contenedor `sara_ollama` (que funge como la consola del motor) se crea completamente vacío para ahorrar espacio. Es necesario descargar e inyectar el archivo de pesos del modelo Llama 3 8B dentro del contenedor.
+
+Ejecuta el siguiente comando para que el contenedor descargue el modelo en segundo plano de manera limpia:
+```bash
+docker exec -it sara_ollama ollama pull llama3:8b
 ```
 
 ### Acceso

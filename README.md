@@ -66,8 +66,9 @@ Para resolverlo, construimos una solución integral de **Software Engineering + 
 *Desafíos superados:* SARA resolvió problemas de latencia (reducción del 94% implementando aceleración GPU) y problemas de *sycophancy* en el LLM (el sesgo de ser excesivamente complaciente) mediante su diseño de debate entre agentes.
 
 > ⚠️ **Aviso de Privacidad y Protección de Datos:**
-> Debido a las políticas de privacidad de la Universidad Icesi y la confidencialidad estratégica de su perfil institucional, **no se subirá ni compartirá la base de datos vectorial (ChromaDB) ni la base de datos transaccional (SQLite3)** en este repositorio público. Todo el directorio `data/` (incluyendo `data/04_vector_db/` y `sara_database.db`) ha sido añadido al `.gitignore`. Los investigadores que deseen replicar el sistema deberán construir su propia base de conocimiento institucional mediante el pipeline de ingesta.
-
+> Debido a las políticas de privacidad de la Universidad Icesi y la confidencialidad estratégica de su perfil institucional, **no se subirá ni compartirá la base de datos vectorial (ChromaDB) ni la base de datos transaccional (SQLite3)** en este repositorio público. Todo el directorio `data/` (incluyendo `data/04_vector_db/` y `sara_database.db`) ha sido añadido al `.gitignore`. 
+> 
+> **Nota de Portabilidad:** Al clonar este repositorio, la estructura de carpetas de `data/` se descargará completamente vacía por diseño. Los investigadores que deseen replicar el sistema deberán inyectar sus propios PDFs en `data/01_raw_icesi/`, proveer su propio `golden_truth.json`, y construir su propia base de conocimiento institucional mediante el script de ingesta masiva.
 ## Estructura del Proyecto
 
 El repositorio está organizado bajo principios de modularidad y arquitectura limpia:
@@ -119,13 +120,18 @@ Existen dos maneras de desplegar el ecosistema SARA: Instalación Local o median
 ### Opción B: Despliegue con Docker (Producción)
 
 Para garantizar la portabilidad y evitar conflictos de dependencias, SARA está diseñado para ejecutarse sobre una infraestructura de microservicios. 
-Asegúrate de tener instalado `Docker`, `Docker Compose v2`, y el paquete **NVIDIA Container Toolkit** en tu servidor host para permitir que el contenedor de Ollama detecte tu GPU.
+**Requisito Estricto:** Debes tener instalado `Docker`, `Docker Compose v2`, y de forma mandatoria el paquete **NVIDIA Container Toolkit** en tu servidor host. Si este toolkit no está presente, el despliegue fallará catástróficamente al intentar el mapeo de GPU (`runtime: nvidia`).
 
 1. Construir y levantar la orquesta (4 servicios: API, UI, Worker, Ollama):
    ```bash
-   docker-compose up --build -d
+   docker compose up --build -d
    ```
-2. Acceder a los servicios:
+2. **Inyección del Modelo (El Cerebro):**
+   Una vez levantados los contenedores, el motor Ollama estará vacío. Debes ingresar al contenedor y descargar el archivo de pesos de Llama 3 8B:
+   ```bash
+   docker exec -it sara_ollama ollama pull llama3:8b
+   ```
+3. Acceder a los servicios:
    * **API de SARA (FastAPI):** `http://localhost:8000/docs`
    * **Panel de Control (Streamlit):** `http://localhost:8501`
    * **SARA Worker:** Corre silenciosamente en background (`docker logs -f sara_worker`).
