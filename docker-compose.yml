@@ -1,5 +1,3 @@
-version: '3.8'
-
 # Declaración de la red interna privada para asegurar comunicación local entre contenedores
 networks:
   sara_net:
