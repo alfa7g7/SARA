@@ -42,6 +42,7 @@ services:
     volumes:
       - ./data:/app/data
       - ./src:/app/src
+      - ./logs:/app/logs
     env_file:
       - .env
     environment:
@@ -60,12 +61,13 @@ services:
     image: sara_core_image:latest
     container_name: sara_worker
     restart: always
-    command: ["python", "scripts/worker_loop.py"]
+    command: ["bash", "-c", "mkdir -p logs && python scripts/worker_loop.py 2>&1 | tee -a logs/pipeline_masivo.log"]
     volumes:
       - ./data:/app/data
       - ./src:/app/src
       - ./scripts:/app/scripts
       - ./run_pipeline.py:/app/run_pipeline.py
+      - ./logs:/app/logs
     env_file:
       - .env
     environment:
