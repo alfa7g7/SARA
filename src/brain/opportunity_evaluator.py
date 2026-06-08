@@ -51,7 +51,8 @@ class OpportunityEvaluator:
         puntaje_previo = evaluacion.get("porcentaje_viabilidad", 0)
         justificacion_previa = evaluacion.get("justificacion_estrategica", "Sin justificación inicial.")
         
-        puntaje_ajustado = auditoria.get("puntaje_ajustado", puntaje_previo)
+        puntaje_ajustado_raw = auditoria.get("puntaje_ajustado", puntaje_previo)
+        puntaje_ajustado = min(puntaje_ajustado_raw, puntaje_previo)
         justificacion_critico = auditoria.get("justificacion_juridica", "Fallo en el reporte del auditor.")
         
         # Reemplazo Absoluto
