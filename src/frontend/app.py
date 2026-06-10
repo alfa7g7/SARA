@@ -77,11 +77,16 @@ if not st.session_state.logged_in:
             submitted = st.form_submit_button("Ingresar")
             
             if submitted:
-                if username == "empleado" and password == "icesi2026":
+                emp_user = os.getenv("SARA_EMPLOYEE_USER", "empleado")
+                emp_pass = os.getenv("SARA_EMPLOYEE_PASS", "icesi2026")
+                adm_user = os.getenv("SARA_ADMIN_USER", "admin")
+                adm_pass = os.getenv("SARA_ADMIN_PASS", "admin2026")
+                
+                if username == emp_user and password == emp_pass:
                     st.session_state.logged_in = True
                     st.session_state.user_role = "Empleado"
                     st.rerun()
-                elif username == "admin" and password == "admin2026":
+                elif username == adm_user and password == adm_pass:
                     st.session_state.logged_in = True
                     st.session_state.user_role = "Administrador"
                     st.rerun()
